@@ -1,15 +1,137 @@
 ---
-title: Using YOUR-PRODUCT-NAME
+title: Using Altoros AWS S3 for PCF
 owner: Partners
 ---
 
-This topic describes how to use YOUR-PRODUCT-NAME.
+This topic describes how to use Altoros AWS S3 for Pivotal Cloud Foundry (PCF) after it has been successfully installed. For more information, see [Installing and Configuring AWS S3 Service Broker for PCF](./installing.html).
 
-##<a id='using'></a> Using YOUR-PRODUCT-NAME
+##<a id='using'></a> Use Altoros AWS S3 for PCF with an App
 
-**This topic should include any instructions for how to use the service or dashboard created by the tile. 
-Give procedures for how to perform the different functions offered by your product and provide screenshots where necessary.** 
+To use Altoros AWS S3 for PCF with an app, follow the procedures in this section to create a service instance and bind the service instance
+to your app. For more information about managing service instances, see <a href="https://docs.pivotal.io/pivotalcf/devguide/services/managing-services.html" target="_blank">Managing Service Instances with the cf CLI</a>.
 
-**You can also use this section to include information about Architecture and Troubleshooting for known errors. 
-If you include a Troubleshooting section, follow the Symptom/Explanation format used in the 
-[Okta Troubleshooting](http://docs.pivotal.io/p-identity/okta/troubleshooting.html) topic**.
+### <a id="list"></a>View the Service
+
+After the tile is installed, `aws-s3` and its service
+plans appear in your PCF marketplace. Run `cf marketplace` to
+see the service listing:
+
+<pre class="terminal">
+$ cf marketplace
+Getting services from marketplace in org test / space test as admin...
+OK
+
+service            plans                             description
+aws-s3             basic, basic-public               Amazon S3 provides developers with secure, durable, highly-scalable object storage
+</pre>
+
+See the next section for instructions on creating S3 service instances based on the plans listed in the `cf marketplace` output.
+
+### <a id="create"></a> Create a Service Instance
+
+You can provision a bucket with `cf create-service`.
+
+The following example creates a `basic` service that provisions a private bucket.
+
+<pre class="terminal">
+$ cf create-service aws-s3 basic my-s3-bucket
+</pre>
+
+Check the creation status using `cf services`. This displays a list of all your service instances. To check the status of a specific service instance, run `cf service NAME-OF-YOUR-SERVICE`.
+
+### <a id="bind"></a>Bind the Service Instance to an App
+
+After you create your bucket, run
+`cf bind-service` to bind the service to your app:
+
+<pre class="terminal">
+$ cf bind-service sample-app my-s3-bucket
+</pre>
+
+### <a id="restart"></a>Restage or Restart Your App
+
+To enable your app to access the service instance, run `cf restage` or `cf restart` to restage or restart your app.
+
+### <a id="obtain"></a>Obtain Service Instance Access Credentials
+
+After you bind your service instance to your app, you can find the credentials of your AWS S3
+user in the environment variables of the app.
+
+Run `cf env APP-NAME` to display environment variables. The credentials are listed under
+the <a href="https://docs.pivotal.io/pivotalcf/devguide/deploy-apps/environment-variable.html#VCAP-SERVICES" target="_blank">VCAP_SERVICES</a> key.
+
+<pre class="terminal">
+$ cf env sample-app
+Getting env variables for app sample-app in org test / space test as admin...
+OK
+
+System-Provided:
+{
+ "VCAP_SERVICES": {
+  "aws-s3": [
+   {
+    "credentials": {
+     "access_key_id": "EXAMPLE-ACCESS-KEY",
+     "bucket": "cf-4c407938-2d43-4a27-80c6-b30251002f87",
+     "region": "eu-central-1",
+     "secret_access_key": "EXAMPLE-SECRET-ACCESS-KEY"
+    },
+    "label": "aws-s3",
+    "name": "my-s3-bucket",
+    "plan": "basic",
+    "provider": null,
+    "syslog_drain_url": null,
+    "tags": [
+     "AWS",
+     "S3",
+     "object-storage"
+    ],
+    "volume_mounts": []
+   }
+  ]
+ }
+}
+...
+</pre>
+
+You can use the access key ID, secret access key, bucket and region to connect to a bucket.
+
+##<a id='deleting'></a> Delete an Altoros AWS S3 for PCF Service Instance
+
+<p class="note"><strong>Note</strong>: Before deleting a service instance, you must back up data stored in your bucket. This operation cannot be undone and all the data will be lost when the service is deleted.</p>
+
+Follow the instructions below to unbind your service instance from all apps and delete it.
+
+### <a id="list2"></a>List Available Services
+
+Run `cf service` to list your available services.
+
+<pre class="terminal">
+$ cf service
+
+Getting services in org test / space test as admin...
+OK
+
+name           service   plan    bound apps   last operation
+my-s3-bucket   aws-s3    basic   sample-app   create succeeded
+</pre>
+
+This example shows that `my-s3-bucket` is bound to the `sample-app` app.
+
+### <a id="unbind"></a>Unbind a Service Instance
+
+Run `cf unbind` to unbind the service from your app.
+
+<pre class="terminal">
+$ cf unbind-service sample-app my-s3-bucket
+</pre>
+
+### <a id="delete"></a>Delete a Service Instance
+
+Run `cf delete-service` to delete the service.
+
+<pre class="terminal">
+  $ cf delete-service my-s3-bucket
+</pre>
+
+Run the `cf services` command to check the deletion status.

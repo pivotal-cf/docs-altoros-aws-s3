@@ -1,28 +1,62 @@
 ---
-title: Installing and Configuring YOUR-PRODUCT-NAME
+title: Installing and Configuring Altoros AWS S3 for PCF
 owner: Partners
 ---
 
-This topic describes how to install and configure YOUR-PRODUCT-NAME.
+This topic describes how to install and configure Altoros AWS S3 for PCF.
 
-##<a id='install'></a> Install and Configure YOUR-PRODUCT-NAME
+##<a id='install'></a> Install and Configure Altoros AWS S3 for PCF
+
+1. Create a new IAM user for the PCF cluster in the AWS Identity & Access Management console with the following policy:
+
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "manageBucketsAndObjectsInBuckets",
+          "Effect": "Allow",
+          "Action": [
+            "s3:*"
+          ],
+          "Resource": "*"
+        },
+        {
+          "Sid": "manageUsersForBinding",
+          "Action": [
+            "iam:GetUser",
+            "iam:CreateUser",
+            "iam:DeleteUser",
+            "iam:ListAccessKeys",
+            "iam:CreateAccessKey",
+            "iam:DeleteAccessKey",
+            "iam:CreatePolicy",
+            "iam:DeletePolicy",
+            "iam:ListAttachedUserPolicies",
+            "iam:AttachUserPolicy",
+            "iam:DetachUserPolicy"
+          ],
+          "Effect": "Allow",
+          "Resource": "*"
+        }
+      ]
+    }
+    ```
 
 1. Download the product file from Pivotal Network.
 
-1. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file. 
+1. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file.
 
-1. Under the **Import a Product** button, click **+** next to the version number of YOUR-PRODUCT-NAME. 
+1. Under the **Import a Product** button, click **+** next to the version number of Altoros AWS S3 for PCF.
 This adds the tile to your staging area.
 
-1. Click the newly added **YOUR-PRODUCT-NAME** tile.
+1. Click the newly added **Altoros AWS S3 for PCF** tile.
 
-1. **This portion of the procedure should tell the users how to configure the newly added tile by
-walking them through the sections. Which fields should they fill out? What are the different
-checkboxes? Include relevant screenshots here.** 
+##<a id="aws-config"></a>AWS Configuration
 
-1. Click **Save**.
+1. Click **AWS S3 Configuration**.
+2. Enter the **Access Key ID** and the **Secret Access Key** from Step 1.
+3. For **Region**, select the AWS region to use.
+4. Click **Save**.
 
-1. Return to the Ops Manager Installation Dashboard and click **Apply Changes** to install YOUR-PRODUCT-NAME tile.
-
-**If needed, include additional configuration information below. For example, maybe there are
-configuration options not required for installation but which could be useful for certain users.**
+1. Return to the Ops Manager Installation Dashboard and click **Apply Changes** to install Altoros AWS S3 for PCF.
