@@ -1,13 +1,13 @@
 ---
 :archive_menu:
-  ".": 
+  .: 
 :production_host: hello
 :subnav_templates:
   altoros-aws-s3: altoros-aws-s3_subnav
 :template_variables: 
-:local_repo_dir: "/docs"
+:local_repo_dir: /Users/jacobknostman/workspace/docs-altoros-aws-s3
 :workspace: !ruby/object:Pathname
-  path: "/docs/docs-book/output/master_middleman/source"
+  path: /Users/jacobknostman/workspace/docs-altoros-aws-s3/docs-book/output/master_middleman/source
 :feedback_enabled: 
 :repo_link_enabled: true
 :repo_links:
